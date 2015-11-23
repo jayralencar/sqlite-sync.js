@@ -1,0 +1,73 @@
+{
+  "name": "sql.js",
+  "version": "0.2.21",
+  "description": "SQLite library with support for opening and writing databases, prepared statements, and more. This SQLite library is in pure javascript (compiled with emscripten).",
+  "keywords": [
+    "sql",
+    "sqlite",
+    "stand-alone",
+    "relational",
+    "database",
+    "RDBMS",
+    "data",
+    "query",
+    "statement",
+    "emscripten",
+    "asm",
+    "asm.js"
+  ],
+  "license": "MIT",
+  "main": "./js/sql.js",
+  "scripts": {
+    "test": "node test/all.js"
+  },
+  "homepage": "http://github.com/kripken/sql.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/kripken/sql.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kripken/sql.js/issues",
+    "email": "pere.jobs@gmail.com"
+  },
+  "devDependencies": {
+    "workerjs": ">=0.1",
+    "test": ">=0.6"
+  },
+  "contributors": [
+    {
+      "name": "Ophir LOJKINE",
+      "email": "pere.jobs@gmail.com",
+      "url": "https://github.com/lovasoa"
+    },
+    {
+      "name": "@kripken"
+    },
+    {
+      "name": "@hankinsoft"
+    },
+    {
+      "name": "@firien"
+    }
+  ],
+  "_id": "sql.js@0.2.21",
+  "_shasum": "79133bb1e40d1c5d0b16060830df34ef1f8a08ae",
+  "_from": "sql.js@*",
+  "_npmVersion": "1.4.7",
+  "_npmUser": {
+    "name": "lovasoa",
+    "email": "pere.jobs@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "lovasoa",
+      "email": "pere.jobs@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "79133bb1e40d1c5d0b16060830df34ef1f8a08ae",
+    "tarball": "http://registry.npmjs.org/sql.js/-/sql.js-0.2.21.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/sql.js/-/sql.js-0.2.21.tgz"
+}
