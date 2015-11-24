@@ -16,7 +16,7 @@
     "async",
     "database"
   ],
-  "version": "0.1.2",
+  "version": "0.1.4",
   "author": {
     "name": "Jayr Alencar",
     "email": "jayralencarpereira@gmail.com",
@@ -27,7 +27,7 @@
     "url": "git+https://github.com/JayrAlencar/sqlite-sync.js"
   },
   "dependencies":{
-    "sql.js":">=0.2.21"
+    "sql.js":"0.2.0"
   },
   "license": "MIT",
   "engines": {

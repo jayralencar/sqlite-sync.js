@@ -59,7 +59,11 @@ sqlite.prototype.pvSELECT = function(sql, where){
 			sql = sql.replace('?',where[i]);
 		}
 	}
-	
+	try{
+		var contents = this.db.exec(sql);	
+	}catch(x){
+		throw x
+	}
 	var contents = this.db.exec(sql);
 	if(contents.length){
 		var columns = contents[0].columns;
