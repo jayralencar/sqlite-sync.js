@@ -1,6 +1,6 @@
 var sqlite = require('./sqlite');
 
-sqlite.connect('teste.db');
+sqlite.connect('test.db');
 
 sqlite.run("CREATE TABLE COMPANYS(ID  INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL);");
 

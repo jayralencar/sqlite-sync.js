@@ -16,11 +16,7 @@
     "async",
     "database"
   ],
-<<<<<<< HEAD
-  "version": "0.1.1",
-=======
-  "version": "0.1.4",
->>>>>>> 212cc3c12578f90f204536f4d5c7e872a95d67b4
+  "version": "0.1.5",
   "author": {
     "name": "Jayr Alencar",
     "email": "jayralencarpereira@gmail.com",

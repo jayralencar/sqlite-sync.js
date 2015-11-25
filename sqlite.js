@@ -1,5 +1,7 @@
 var fs = require('fs');
 var SQL = require('sql.js');
+var path = require('path');
+var child_process = require('child_process')
 
 function sqlite () {
 	// body...
@@ -21,7 +23,18 @@ sqlite.prototype.connect = function(db){
 			throw x;
 		}
 	}else{
-		throw "Database not found";
+		var dirname = path.dirname(db);
+
+		child_process.execSync('touch '+db);
+
+		var filebuffer = fs.readFileSync(db);
+		buffer = filebuffer;
+		try{
+			var connection = new SQL.Database(filebuffer);	
+			this.db = connection;
+		}catch(x){
+			throw x;
+		}
 	}
 	return this;	
 }
