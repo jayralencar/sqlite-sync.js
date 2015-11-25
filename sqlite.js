@@ -25,7 +25,7 @@ sqlite.prototype.connect = function(db){
 	}else{
 		var dirname = path.dirname(db);
 
-		child_process.execSync('touch '+db);
+		child_process.execSync('sqlite3 '+db+' .dump > '+db);
 
 		var filebuffer = fs.readFileSync(db);
 		buffer = filebuffer;
