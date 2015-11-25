@@ -59,19 +59,28 @@ sqlite.prototype.pvSELECT = function(sql, where){
 			sql = sql.replace('?',where[i]);
 		}
 	}
-	
-	var contents = this.db.exec(sql);
-	var columns = contents[0].columns;
-	var values = contents[0].values;
-	var resultado = [];
-	for(var i = 0 ; i < values.length ; i++){
-		var linha = {};
-		for(var j = 0 ; j < columns.length; j++){
-			linha[columns[j]] = values[i][j]
-		}
-		resultado.push(linha);
+	try{
+		var contents = this.db.exec(sql);	
+	}catch(x){
+		throw x
 	}
-	return resultado;
+	var contents = this.db.exec(sql);
+	if(contents.length){
+		var columns = contents[0].columns;
+		var values = contents[0].values;
+		var resultado = [];
+		for(var i = 0 ; i < values.length ; i++){
+			var linha = {};
+			for(var j = 0 ; j < columns.length; j++){
+				linha[columns[j]] = values[i][j]
+			}
+			resultado.push(linha);
+		}
+		return resultado;
+	}else{
+		return [];
+	}
+	
 }
 
 //INSERT
