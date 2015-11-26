@@ -23,6 +23,7 @@ sqlite.run("CREATE TABLE COMPANYS(ID  INTEGER PRIMARY KEY AUTOINCREMENT, NAME TE
 </pre>
 
 <br/>
-Veja mais no <a href="https://github.com/JayrAlencar/sqlite-sync.js/wiki">Wiki</a>
+## Veja mais no <a href="https://github.com/JayrAlencar/sqlite-sync.js/wiki">Wiki</a>
 # Desenvolvedor
 <a href="//jayralencar.com.br">Jayr Alencar</a>
+#Veja mais <a href="//clubedosgeeks.com.br">Clube dos Geeks</a>

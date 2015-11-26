@@ -23,14 +23,14 @@ sqlite.prototype.connect = function(db){
 			throw x;
 		}
 	}else{
-		var dirname = path.dirname(db);
+		// var dirname = path.dirname(db);
 
-		child_process.execSync('sqlite3.exe '+db+' " "',{cwd: __dirname});
+		// child_process.execSync('sqlite3.exe '+db+' " "',{cwd: __dirname});
 
-		var filebuffer = fs.readFileSync(db);
-		buffer = filebuffer;
+		// var filebuffer = fs.readFileSync(db);
+		// buffer = filebuffer;
 		try{
-			var connection = new SQL.Database(filebuffer);	
+			var connection = new SQL.Database();	
 			this.db = connection;
 		}catch(x){
 			throw x;
