@@ -23,12 +23,6 @@ sqlite.prototype.connect = function(db){
 			throw x;
 		}
 	}else{
-		// var dirname = path.dirname(db);
-
-		// child_process.execSync('sqlite3.exe '+db+' " "',{cwd: __dirname});
-
-		// var filebuffer = fs.readFileSync(db);
-		// buffer = filebuffer;
 		try{
 			var connection = new SQL.Database();	
 			this.db = connection;
@@ -77,7 +71,6 @@ sqlite.prototype.pvSELECT = function(sql, where){
 	}catch(x){
 		throw x
 	}
-	var contents = this.db.exec(sql);
 	if(contents.length){
 		var columns = contents[0].columns;
 		var values = contents[0].values;
