@@ -44,7 +44,7 @@ sqlite.prototype.run = function(sql, options, options2) {
 		case "SELECT": return this.pvSELECT(sql, options); break;
 		case "INSERT": return this.pvINSERT(sql, options); break;
 		case "UPDATE": return this.pvUPDATE(sql, options); break;
-		case "DELETE": return this.runAll(sql); break;
+		case "DELETE": return this.pvDELETE(sql, options); break;
 		default: return this.runAll(sql)
 	}
 };
@@ -87,6 +87,22 @@ sqlite.prototype.pvSELECT = function(sql, where){
 		return [];
 	}
 	
+}
+
+// DELETE
+sqlite.prototype.pvDELETE = function(sql, where){
+	if(where){
+		for(var i = 0 ; i < where.length; i++){
+			sql = sql.replace('?',where[i]);
+		}
+	}
+	try{
+		this.db.exec(sql);	
+		this.write();
+		return true;
+	}catch(x){
+		throw x;
+	}
 }
 
 //INSERT
