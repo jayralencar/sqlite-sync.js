@@ -1,4 +1,9 @@
 var fs = require('fs');
+//Testa se é electron, e troca o stderr e stdout para console
+if(process.versions.electron){
+	process.stderr.write = console.error.bind(console); 
+	process.stdout.write = console.log.bind(console); 
+}
 var SQL = require('sql.js');
 var path = require('path');
 var child_process = require('child_process')
