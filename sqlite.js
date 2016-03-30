@@ -70,6 +70,7 @@ sqlite.prototype.connect = function(db){
 	}else{
 		try{
 			this.db = new SQL.Database();	
+			this.write();
 		}catch(x){
 			throw x;
 		}
