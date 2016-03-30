@@ -22,13 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-function sqlite () {}
 //Testa se é electron, e troca o stderr e stdout para console.
 //Test if is Electon, and change sterr e stdout for console.
 if(process.versions.electron){
 	process.stderr.write = console.error.bind(console); 
 	process.stdout.write = console.log.bind(console); 
 }
+
 //Requeries
 var fs = require('fs');
 var SQL = require('sql.js');
@@ -40,6 +40,10 @@ sqlite.prototype.db = null;
 sqlite.prototype.buffer = null;
 sqlite.prototype.writer = null;
 sqlite.prototype.file = null;
+
+function sqlite () {
+	
+}
 
 /**
    * Database connection
@@ -74,7 +78,14 @@ sqlite.prototype.connect = function(db){
 	return this;	
 }
 
-
+/**
+   * Runing queries | Sync & Async
+   *
+   * @param {String} sql - SQL code
+   * @param {Array|Function} options - Array to prepared sql | callback function
+   * @param {Function} callback - callback function
+   * @return {Array|Object} 
+ */
 sqlite.prototype.run = function(sql, options, callback) {
 	if(typeof(options) == "function"){
 		callback = options;
@@ -98,7 +109,16 @@ sqlite.prototype.run = function(sql, options, callback) {
 	}
 };
 
-//Async -- Depreciado
+/**
+   * Runing queries Async
+   *
+   * @param {String} sql - SQL code
+   * @param {Array|Function} options - Array to prepared sql | callback function
+   * @param {Function} callback - callback function
+   * @return {Array|Object} 
+
+   * @observation: This function will no longer be used soon!
+ */
 sqlite.prototype.runAsync = function(sql, options, callback){
 	if(typeof(options) == "function"){
 		options(this.run(sql));
@@ -108,7 +128,13 @@ sqlite.prototype.runAsync = function(sql, options, callback){
 	return this;
 }
 
-//Select
+/**
+   * Runing selects - PRIVATE
+   *
+   * @param {String}  sql - SQL code
+   * @param {Array} where - Array to prepared sql 
+   * @return {Object}
+ */
 sqlite.prototype.pvSELECT = function(sql, where){
 	if(where){
 		for(var i = 0 ; i < where.length; i++){
@@ -138,7 +164,13 @@ sqlite.prototype.pvSELECT = function(sql, where){
 	
 }
 
-// DELETE
+/**
+   * Runing deletes - PRIVATE
+   *
+   * @param {String}  sql - SQL code
+   * @param {Array} where - Array to prepared sql 
+   * @return {Boo}
+ */
 sqlite.prototype.pvDELETE = function(sql, where){
 	if(where){
 		for(var i = 0 ; i < where.length; i++){
@@ -150,11 +182,18 @@ sqlite.prototype.pvDELETE = function(sql, where){
 		this.write();
 		return true;
 	}catch(x){
+		return false;
 		throw x;
 	}
 }
 
-//INSERT
+/**
+   * Runing insets - PRIVATE
+   *
+   * @param {String}  sql - SQL code
+   * @param {Array} data - Array to prepared sql 
+   * @return {Int} last insert id
+ */
 sqlite.prototype.pvINSERT = function(sql,data){
 	if(data){
 		for(var i = 0 ; i < data.length; i++){
@@ -168,7 +207,13 @@ sqlite.prototype.pvINSERT = function(sql,data){
 	
 }
 
-//UPDATE
+/**
+   * Runing updates - PRIVATE
+   *
+   * @param {String}  sql - SQL code
+   * @param {Array} data - Array to prepared sql 
+   * @return {Boo} 
+ */
 sqlite.prototype.pvUPDATE = function(sql, data){
 	if(data){
 		for(var i = 0 ; i < data.length; i++){
@@ -185,7 +230,14 @@ sqlite.prototype.pvUPDATE = function(sql, data){
 	}
 }
 
-//INSERT public
+/**
+   * Runing INSERT - Publics
+   *
+   * @param {String}  entity - Name of database table
+   * @param {Object} data - Object to be inserted
+   * @param {Function} callback - callback function
+   * @return {Int|Object} - insert id | instance
+ */
 sqlite.prototype.insert = function(entity, data, callback){
 	var keys = [];
 	var values = []
@@ -203,10 +255,22 @@ sqlite.prototype.insert = function(entity, data, callback){
 	}
 }
 
-//UPDATE public
+/**
+   * Runing UPDATE - Publics
+   *
+   * @param {String}  entity - Name of database table
+   * @param {Object} data - Object to be updated
+   * @param {Object|Function} clause - Object with wheres | callback function
+   * @param {Function} callback - callback function
+   * @return {Boo|Object} - result | instance
+ */
 sqlite.prototype.update = function(entity, data, clause, callback){
 	var sets = [];
 	var where = [];
+	if(typeof(clause)=="function"){
+		callback = clause;
+		clause = {};
+	}
 	for(key in data){
 		sets.push(key+" = '"+data[key]+"'");
 	}
@@ -214,7 +278,7 @@ sqlite.prototype.update = function(entity, data, clause, callback){
 		where.push(key+" = '"+clause[key]+"'");
 	}
 
-	var sql = "UPDATE "+entity+" SET "+sets.join(', ')+" WHERE "+where.join(" AND ");
+	var sql = "UPDATE "+entity+" SET "+sets.join(', ')+(where.length>0?" WHERE "+where.join(" AND "):"");
 
 	if(callback){
 		callback(this.run(sql));
@@ -224,6 +288,14 @@ sqlite.prototype.update = function(entity, data, clause, callback){
 	}
 }
 
+/**
+   * Runing DELETE - Publics
+   *
+   * @param {String}  entity - Name of database table
+   * @param {Object|Function} clause - Object with wheres | callback function
+   * @param {Function} callback - callback function
+   * @return {Boo|Object} - result | instance
+ */
 sqlite.prototype.delete = function(entity, clause, callback){
 	var where = [];
 	if(typeof(clause)=="function"){
@@ -249,10 +321,15 @@ sqlite.prototype.delete = function(entity, clause, callback){
 	}
 }
 
-//Comum
+/**
+   * Runing All - PRIVATE
+   *
+   * @param {String}  sql - SQL
+   * @return {Boo} 
+ */
 sqlite.prototype.runAll = function(sql){
 	try{
-		this.db.run(sql)
+		var tes = this.db.run(sql)
 		this.write();
 		return true;
 	}catch (x){
@@ -261,6 +338,11 @@ sqlite.prototype.runAll = function(sql){
 	}
 }
 
+/**
+   * Writing file or calling buffer callback
+   *
+   * @return {Object} 
+ */
 sqlite.prototype.write = function(){
 	var data = this.db.export();
 	var buffer = new Buffer(data);
@@ -274,5 +356,5 @@ sqlite.prototype.write = function(){
 }
 
 
-
+// Exporting module
 module.exports = new sqlite();
