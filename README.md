@@ -2,28 +2,49 @@
 Node module to sqlite sync and async</br>
 [![NPM](https://nodei.co/npm/sqlite-sync.png?downloads=true&downloadRank=true)](https://nodei.co/npm/sqlite-sync/)
 
-Pacote node.js feito para conexão com banco de dados <strong>sqlite</strong>, e para executar os comandos sql de forma síncrona ou assíncrona, a gosto do desenvolvedor.
+node.js package for database connection with <strong> SQLite </ strong>, and execute SQL commands synchronously or asynchronously.
 
-# Instalação
-<code>npm install sqlite-sync</code>
+# Install
+```shell
+npm install sqlite-sync
+```
 
-# Uso
-O uso do sqlite-sync é bem simples, ele foi desenvolvido para funcionar de forma síncrona ou assíncrona, e a conexão com o banco de dados é totalmente síncrona, por isso o nome. Veja como usar:
-<pre>
-<code>
-var sqlite = require('sqlite-sync');
+# Usage
+```js
+var sqlite = require('sqlite-sync'); //requiring
 
-//Connecting
-sqlite.connect('myDatabase.db');
+//Connecting - if the file does not exist it will be created
+sqlite.connect('test/test.db'); 
 
-//Create example table
+//Creating table - you can run any command
 sqlite.run("CREATE TABLE COMPANYS(ID  INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL);");
 
-</code>
-</pre>
+//Inserting - this function can be sync to, look the wiki
+sqlite.insert("COMPANYS",{NAME:"My COMPANY"}, function(inserid){
+	console.log(inserid);
+});
+
+//Updating - returns the number of rows modified - can be async too
+var rows_modified = sqlite.update("COMPANYS",{NAME:"TESTING UPDATE"},{ID:1});
+
+//Create your function
+function test(a,b){
+	return a+b;
+}
+
+//Add your function to connection
+sqlite.create_function(test);
+
+// Use your function in the SQL
+console.log(sqlite.run("SELECT ID, test(NAME, ' Inc') as NAME FROM COMPANYS"));
+
+// Closing connection 
+sqlite.close();
+
+```
 
 <br/>
-## Veja mais no <a href="https://github.com/JayrAlencar/sqlite-sync.js/wiki">Wiki</a>
-# Desenvolvedor
+## See more - <a href="https://github.com/JayrAlencar/sqlite-sync.js/wiki">Wiki</a>
+# Developer
 <a href="//jayralencar.com.br">Jayr Alencar</a>
-#Veja mais <a href="//clubedosgeeks.com.br">Clube dos Geeks</a>
+# Look <a href="//clubedosgeeks.com.br">Clube dos Geeks</a>
