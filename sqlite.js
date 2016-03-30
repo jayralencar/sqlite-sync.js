@@ -180,7 +180,7 @@ sqlite.prototype.pvDELETE = function(sql, where){
 	try{
 		this.db.exec(sql);	
 		this.write();
-		return true;
+		return this.db.getRowsModified();
 	}catch(x){
 		return false;
 		throw x;
@@ -223,7 +223,7 @@ sqlite.prototype.pvUPDATE = function(sql, data){
 	try{
 		this.db.run(sql)
 		this.write();
-		return true;
+		return this.db.getRowsModified();
 	}catch (x){
 		return false;
 		throw x
@@ -353,6 +353,23 @@ sqlite.prototype.write = function(){
 		this.writer(buffer);
 	}
 	return this;
+}
+
+/*
+	* Creating functions
+	*
+	* @param {Function} func - the function
+	* @return {Object} 
+*/
+sqlite.prototype.create_function = function(func){
+	this.db.create_function(func.name, func);
+}
+
+/**
+	* Closing connection
+*/
+sqlite.prototype.close = function(){
+	this.db.close();
 }
 
 

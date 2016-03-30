@@ -8,7 +8,14 @@ sqlite.insert("COMPANYS",{NAME:"My COMPANY"}, function(inserid){
 	console.log(inserid);
 });
 
-sqlite.update("COMPANYS",{NAME:"TESTING UPDATE"},{ID:1})
+sqlite.update("COMPANYS",{NAME:"TESTING UPDATE"},{ID:1});
 
-console.log(sqlite.run("SELECT * FROM COMPANYS"));
+function test(a,b){
+	return a+b;
+}
 
+sqlite.create_function(test);
+
+console.log(sqlite.run("SELECT ID, test(NAME, ' Inc') as NAME FROM COMPANYS"));
+
+sqlite.close();
