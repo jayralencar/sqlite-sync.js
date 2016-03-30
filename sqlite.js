@@ -80,6 +80,11 @@ sqlite.prototype.connect = function(db){
 }
 
 /**
+	* Alternative connection
+*/
+sqlite.prototype.con = sqlite.prototype.connect;
+
+/**
    * Runing queries | Sync & Async
    *
    * @param {String} sql - SQL code
