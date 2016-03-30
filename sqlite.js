@@ -1,42 +1,79 @@
-var fs = require('fs');
-//Testa se é electron, e troca o stderr e stdout para console
+/*
+The MIT License (MIT)
+
+Copyright (c) 2015 Jayr Alencar
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+function sqlite () {}
+//Testa se é electron, e troca o stderr e stdout para console.
+//Test if is Electon, and change sterr e stdout for console.
 if(process.versions.electron){
 	process.stderr.write = console.error.bind(console); 
 	process.stdout.write = console.log.bind(console); 
 }
+//Requeries
+var fs = require('fs');
 var SQL = require('sql.js');
 var path = require('path');
-var child_process = require('child_process')
+var events = require('events');
 
-function sqlite () {
-	// body...
-}
-
+//Variables
 sqlite.prototype.db = null;
 sqlite.prototype.buffer = null;
-sqlite.prototype.file = '';
+sqlite.prototype.writer = null;
+sqlite.prototype.file = null;
 
+/**
+   * Database connection
+   *
+   * @param {String|Object} db - File directory+filename | buffer
+   * @return {Object}
+ */
 sqlite.prototype.connect = function(db){
-	this.file = db;
-	if(fs.existsSync(db)){
-		var filebuffer = fs.readFileSync(db);
-		buffer = filebuffer;
+	if(typeof(db)=='string'){
+		this.file = db;
+		if(fs.existsSync(this.file)){
+			this.buffer = fs.readFileSync(this.file);
+		}
+	}else if(typeof(db)=="object"){
+		this.buffer = db;
+	}
+
+	if(this.buffer){
 		try{
-			var connection = new SQL.Database(filebuffer);	
-			this.db = connection;
+			this.db = new SQL.Database(this.buffer);	
 		}catch(x){
 			throw x;
 		}
 	}else{
 		try{
-			var connection = new SQL.Database();	
-			this.db = connection;
+			this.db = new SQL.Database();	
 		}catch(x){
 			throw x;
 		}
 	}
+
 	return this;	
 }
+
 
 sqlite.prototype.run = function(sql, options, callback) {
 	if(typeof(options) == "function"){
@@ -227,7 +264,12 @@ sqlite.prototype.runAll = function(sql){
 sqlite.prototype.write = function(){
 	var data = this.db.export();
 	var buffer = new Buffer(data);
-	fs.writeFileSync(this.file, buffer);
+
+	if(this.file){
+		fs.writeFileSync(this.file, buffer);
+	}else if(this.writer && typeof(this.writer) == 'function' ){
+		this.writer(buffer);
+	}
 	return this;
 }
 
