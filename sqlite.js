@@ -38,23 +38,30 @@ sqlite.prototype.connect = function(db){
 	return this;	
 }
 
-sqlite.prototype.run = function(sql, options, options2) {
-	//SELECT
-	//INSERT
-	//UPDATE
-	//DELETE
+sqlite.prototype.run = function(sql, options, callback) {
+	if(typeof(options) == "function"){
+		callback = options;
+		options = [];
+	}
+	var results;
 	var type = sql.substring(0,6);
 	type = type.toUpperCase();
 	switch(type){
-		case "SELECT": return this.pvSELECT(sql, options); break;
-		case "INSERT": return this.pvINSERT(sql, options); break;
-		case "UPDATE": return this.pvUPDATE(sql, options); break;
-		case "DELETE": return this.pvDELETE(sql, options); break;
-		default: return this.runAll(sql)
+		case "SELECT": results = this.pvSELECT(sql, options); break;
+		case "INSERT": results = this.pvINSERT(sql, options); break;
+		case "UPDATE": results = this.pvUPDATE(sql, options); break;
+		case "DELETE": results = this.pvDELETE(sql, options); break;
+		default: results = this.runAll(sql)
+	}
+	if(callback){
+		callback(results);
+		return this;
+	}else{
+		return results;
 	}
 };
 
-//Async
+//Async -- Depreciado
 sqlite.prototype.runAsync = function(sql, options, callback){
 	if(typeof(options) == "function"){
 		options(this.run(sql));
@@ -177,6 +184,31 @@ sqlite.prototype.update = function(entity, data, clause, callback){
 		return this;
 	}else{
 		return this.run(sql);
+	}
+}
+
+sqlite.prototype.delete = function(entity, clause, callback){
+	var where = [];
+	if(typeof(clause)=="function"){
+		callback = clause;
+		clause = [];
+	}
+	
+	if(clause){
+		for(key in clause){
+			where.push(key+" = '"+clause[key]+"'");
+		}
+	}
+
+	var sql = "DELETE FROM "+entity+" WHERE "+where.join(" AND ");
+
+	var result = this.pvDELETE(sql);
+
+	if(callback){
+		callback(result);
+		return this;
+	}else{
+		return result;
 	}
 }
 
