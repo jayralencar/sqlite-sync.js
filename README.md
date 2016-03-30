@@ -2,7 +2,7 @@
 Node module to sqlite sync and async</br>
 [![NPM](https://nodei.co/npm/sqlite-sync.png?downloads=true&downloadRank=true)](https://nodei.co/npm/sqlite-sync/)
 
-node.js package for database connection with <strong> SQLite </ strong>, and execute SQL commands synchronously or asynchronously.
+node.js package for database connection with <strong> SQLite </strong>, and execute SQL commands synchronously or asynchronously.
 
 # Install
 ```shell
