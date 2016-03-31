@@ -144,7 +144,7 @@ sqlite.prototype.runAsync = function(sql, options, callback){
 sqlite.prototype.pvSELECT = function(sql, where){
 	if(where){
 		for(var i = 0 ; i < where.length; i++){
-			sql = sql.replace('?',where[i]);
+			sql = sql.replace('?',"\'"+where[i]+"\'");
 		}
 	}
 	try{
