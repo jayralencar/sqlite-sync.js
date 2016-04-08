@@ -40,6 +40,7 @@ sqlite.prototype.db = null;
 sqlite.prototype.buffer = null;
 sqlite.prototype.writer = null;
 sqlite.prototype.file = null;
+sqlite.prototype.sql = '';
 
 function sqlite () {
 	
@@ -126,6 +127,7 @@ sqlite.prototype.run = function(sql, options, callback) {
    * @observation: This function will no longer be used soon!
  */
 sqlite.prototype.runAsync = function(sql, options, callback){
+	this.sql = sql;
 	if(typeof(options) == "function"){
 		options(this.run(sql));
 	}else{
@@ -147,6 +149,7 @@ sqlite.prototype.pvSELECT = function(sql, where){
 			sql = sql.replace('?',"\'"+where[i]+"\'");
 		}
 	}
+	this.sql = sql;
 	try{
 		var contents = this.db.exec(sql);	
 	}catch(x){
@@ -183,6 +186,7 @@ sqlite.prototype.pvDELETE = function(sql, where){
 			sql = sql.replace('?',where[i]);
 		}
 	}
+	this.sql = sql;
 	try{
 		this.db.exec(sql);	
 		this.write();
@@ -206,6 +210,7 @@ sqlite.prototype.pvINSERT = function(sql,data){
 			sql = sql.replace('?',"'"+data[i]+"'");
 		}
 	}
+	this.sql = sql;
 	this.db.run(sql);
 	var last = this.pvSELECT("SELECT last_insert_rowid()");
 	this.write();
@@ -226,6 +231,7 @@ sqlite.prototype.pvUPDATE = function(sql, data){
 			sql = sql.replace('?',"'"+data[i]+"'");
 		}
 	}
+	this.sql = sql;
 	try{
 		this.db.run(sql)
 		this.write();
@@ -253,6 +259,7 @@ sqlite.prototype.insert = function(entity, data, callback){
 	}
 
 	var sql = "INSERT INTO "+entity+" ("+keys.join(',')+") VALUES ('"+values.join("','")+"')";
+	this.sql = sql;
 	if(callback){
 		callback(this.run(sql));
 		return this;
@@ -286,6 +293,8 @@ sqlite.prototype.update = function(entity, data, clause, callback){
 
 	var sql = "UPDATE "+entity+" SET "+sets.join(', ')+(where.length>0?" WHERE "+where.join(" AND "):"");
 
+	this.sql = sql;
+
 	if(callback){
 		callback(this.run(sql));
 		return this;
@@ -317,6 +326,8 @@ sqlite.prototype.delete = function(entity, clause, callback){
 
 	var sql = "DELETE FROM "+entity+" WHERE "+where.join(" AND ");
 
+	this.sql = sql;
+
 	var result = this.pvDELETE(sql);
 
 	if(callback){
@@ -334,6 +345,7 @@ sqlite.prototype.delete = function(entity, clause, callback){
    * @return {Boo} 
  */
 sqlite.prototype.runAll = function(sql){
+	this.sql = sql;
 	try{
 		var tes = this.db.run(sql)
 		this.write();
@@ -378,6 +390,13 @@ sqlite.prototype.close = function(){
 	this.db.close();
 }
 
+/**
+	* Get current sql
+	* @return {String}
+*/
+sqlite.prototype.getSql = function(){
+	return this.sql;
+}
 
 // Exporting module
 module.exports = new sqlite();

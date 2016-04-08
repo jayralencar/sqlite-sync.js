@@ -1,7 +1,7 @@
 {
   "name": "sqlite-sync",
   "description": "Node module to sqlite sync and async ",
-   "readmeFilename": "README.md" ,
+  "readmeFilename": "README.md" ,
   "keywords": [
     "sqlite",
     "sqlite3",
@@ -16,7 +16,7 @@
     "async",
     "database"
   ],
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": {
     "name": "Jayr Alencar",
     "email": "jayralencarpereira@gmail.com",

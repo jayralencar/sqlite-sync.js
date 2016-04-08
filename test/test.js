@@ -9,6 +9,7 @@ sqlite.insert("COMPANYS",{NAME:"My COMPANY"}, function(inserid){
 });
 
 sqlite.update("COMPANYS",{NAME:"TESTING UPDATE"},{ID:1});
+console.log(sqlite.getSql())
 
 function test(a,b){
 	return a+b;
