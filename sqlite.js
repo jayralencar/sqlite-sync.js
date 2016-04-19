@@ -91,7 +91,7 @@ sqlite.prototype.con = sqlite.prototype.connect;
    * @param {String} sql - SQL code
    * @param {Array|Function} options - Array to prepared sql | callback function
    * @param {Function} callback - callback function
-   * @return {Array|Object} 
+   * @return {Array|Object}
  */
 sqlite.prototype.run = function(sql, options, callback) {
 	if(typeof(options) == "function"){
@@ -106,6 +106,7 @@ sqlite.prototype.run = function(sql, options, callback) {
 		case "INSERT": results = this.pvINSERT(sql, options); break;
 		case "UPDATE": results = this.pvUPDATE(sql, options); break;
 		case "DELETE": results = this.pvDELETE(sql, options); break;
+		case "PRAGMA": results = this.pvPRAGMA(sql, options); break;
 		default: results = this.runAll(sql)
 	}
 	if(callback){
@@ -135,6 +136,23 @@ sqlite.prototype.runAsync = function(sql, options, callback){
 	}
 	return this;
 }
+
+/**
+	* PRAGMA statements
+	*
+	* @param {String} sql - SQL statement
+	* @param {Array} where - Array ti prepared sql
+	* @return {Object}
+*/
+sqlite.prototype.pvPRAGMA = function(sql, where) {
+	if((sql.split('=')).length>1){
+		// update
+		return this.pvUPDATE(sql, where);
+	}else{
+		// get
+		return this.pvSELECT(sql, where);
+	}
+};
 
 /**
    * Runing selects - PRIVATE
@@ -347,9 +365,9 @@ sqlite.prototype.delete = function(entity, clause, callback){
 sqlite.prototype.runAll = function(sql){
 	this.sql = sql;
 	try{
-		var tes = this.db.run(sql)
+		var tes = this.db.exec(sql)
 		this.write();
-		return true;
+		return tes;
 	}catch (x){
 		return false;
 		throw x
@@ -396,6 +414,32 @@ sqlite.prototype.close = function(){
 */
 sqlite.prototype.getSql = function(){
 	return this.sql;
+}
+
+/**
+	* backup
+	* @param {String}
+*/
+sqlite.prototype.backup = function(file, name){
+	var filename = path.basename(file);
+	name = (name)? name : (filename.split('.'))[0];
+	var sql = "--\n";
+	sql += "-- File generated with sqlite-sync.js on "+(new Date()).toLocaleString()+"\n";
+	sql += "--\n";
+	sql += "CREATE DATABASE "+name+";\n\n";
+	// tables
+	var tables = this.run("SELECT * FROM sqlite_master");
+	for(var i = 0 ; i < tables.length ; i++){
+		sql+="-- Table: "+tables[i].tbl_name+"\n";
+		sql+=tables[i].sql+"\n";
+
+		var values = this.run("SELECT * FROM "+tables[i].tbl_name);
+		 for(var j=0;j<values.length;j++){
+	       console.log(Object.keys(values[j]))
+	    }
+
+	}
+	console.log(sql)
 }
 
 // Exporting module
