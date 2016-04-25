@@ -17,11 +17,17 @@ var sqlite = require('sqlite-sync'); //requiring
 sqlite.connect('test/test.db'); 
 
 //Creating table - you can run any command
-sqlite.run("CREATE TABLE COMPANYS(ID  INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL);");
+sqlite.run("CREATE TABLE COMPANYS(ID  INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT NOT NULL);",function(res){
+	if(res.error)
+		throw res.error;
+	console.log(res);
+});
 
 //Inserting - this function can be sync to, look the wiki
-sqlite.insert("COMPANYS",{NAME:"My COMPANY"}, function(inserid){
-	console.log(inserid);
+sqlite.insert("COMPANYS",{NAME:"My COMPANY"}, function(res){
+	if(res.error)
+		throw res.error;
+	console.log(res);
 });
 
 //Updating - returns the number of rows modified - can be async too

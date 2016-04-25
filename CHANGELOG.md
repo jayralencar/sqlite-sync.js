@@ -1,6 +1,10 @@
 # Change Log
 This change log is started in 0.3.3;
 
+## 0.3.5
+-- Error Handling
+-- Debug options
+
 ## 0.3.4 (2016-04-19)
 - Execute PRAGMA statements (update/get)
 ```js
