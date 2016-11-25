@@ -56,7 +56,9 @@ function sqlite () {
    sqlite.prototype.connect = function(db){
    	if(typeof(db)=='string'){
    		this.file = db;
-   		if(fs.existsSync(this.file)){
+		if (!db || db === ':memory:' || db.indexOf('file::memory:') === 0) {
+			this.buffer = new Buffer(0);
+		} else if(fs.existsSync(this.file)){
    			this.buffer = fs.readFileSync(this.file);
    		}
    	}else if(typeof(db)=="object"){
