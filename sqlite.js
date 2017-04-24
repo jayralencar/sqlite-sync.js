@@ -128,14 +128,16 @@ function sqlite () {
    * @param {Function} callback - callback function
    * @return {Array|Object} 
 
-   * @observation: This function will no longer be used soon!
+   * @deprecated This function will no longer be used soon!
    */
    sqlite.prototype.runAsync = function(sql, options, callback){
    	this.sql = sql;
    	if(typeof(options) == "function"){
    		options(this.run(sql));
-   	}else{
+   	}else if(typeof(callback) == "function"){
    		callback(this.run(sql, options));
+   	}else{
+   		this.run(sql, options);
    	}
    	return this;
    }
@@ -167,27 +169,19 @@ function sqlite () {
    sqlite.prototype.pvSELECT = function(sql, where){
    	if(where){
    		for(var i = 0 ; i < where.length; i++){
-   			sql = sql.replace('?',"\'"+where[i]+"\'");
+   			sql = sql.replace('?',":arg"+i);
    		}
    	}
    	this.sql = sql;
    	try{
-   		var contents = this.db.exec(sql);	
-   		if(contents.length){
-   			var columns = contents[0].columns;
-   			var values = contents[0].values;
-   			var resultado = [];
-   			for(var i = 0 ; i < values.length ; i++){
-   				var linha = {};
-   				for(var j = 0 ; j < columns.length; j++){
-   					linha[columns[j]] = values[i][j]
-   				}
-   				resultado.push(linha);
-   			}
-   			return resultado;
-   		}else{
-   			return [];
+   		var stmt = this.db.prepare(sql);
+   		stmt.bind(where);
+   		var resultado = [];
+   		while (stmt.step()){
+   			resultado.push(stmt.getAsObject());
    		}
+   		stmt.free();
+   		return resultado;
    	}catch(x){
    		if(this.debug){
    			throw x;
@@ -206,12 +200,15 @@ function sqlite () {
    sqlite.prototype.pvDELETE = function(sql, where){
    	if(where){
    		for(var i = 0 ; i < where.length; i++){
-   			sql = sql.replace('?',where[i]);
+   			sql = sql.replace('?',":arg"+i);
    		}
    	}
    	this.sql = sql;
    	try{
-   		this.db.exec(sql);	
+   		var stmt = this.db.prepare(sql);
+   		stmt.bind(where);
+   		stmt.step();
+   		stmt.free();
    		this.write();
    		return this.db.getRowsModified();
    	}catch(x){
@@ -232,12 +229,15 @@ function sqlite () {
    sqlite.prototype.pvINSERT = function(sql,data){
    	if(data){
    		for(var i = 0 ; i < data.length; i++){
-   			sql = sql.replace('?',"'"+data[i]+"'");
+   			sql = sql.replace('?',":arg"+i);
    		}
    	}
    	this.sql = sql;
    	try{
-   		this.db.run(sql);
+   		var stmt = this.db.prepare(sql);
+   		stmt.bind(data);
+   		stmt.step();
+   		stmt.free();
    		var last = this.pvSELECT("SELECT last_insert_rowid()");
    		this.write();
    		return last[0]['last_insert_rowid()'];
@@ -260,12 +260,15 @@ function sqlite () {
    sqlite.prototype.pvUPDATE = function(sql, data){
    	if(data){
    		for(var i = 0 ; i < data.length; i++){
-   			sql = sql.replace('?',"'"+data[i]+"'");
+   			sql = sql.replace('?',":arg"+i);
    		}
    	}
    	this.sql = sql;
    	try{
-   		this.db.run(sql)
+   		var stmt = this.db.prepare(sql);
+   		stmt.bind(data);
+   		stmt.step();
+   		stmt.free();
    		this.write();
    		return this.db.getRowsModified();
    	}catch (x){
@@ -287,18 +290,21 @@ function sqlite () {
    sqlite.prototype.insert = function(entity, data, callback){
    	var keys = [];
    	var values = []
+   	var binds = [];
    	for(key in data){
+   		if (!data.hasOwnProperty(key)) continue;
    		keys.push(key);
    		values.push(data[key]);
+   		binds.push('?');
    	}
 
-   	var sql = "INSERT INTO "+entity+" ("+keys.join(',')+") VALUES ('"+values.join("','")+"')";
+   	var sql = "INSERT INTO "+entity+" ("+keys.join(',')+") VALUES ("+binds.join(",")+")";
    	this.sql = sql;
    	if(callback){
-   		callback(this.run(sql));
+   		callback(this.run(sql, values));
    		return this;
    	}else{
-   		return this.run(sql);
+   		return this.run(sql, values);
    	}
    }
 
@@ -318,11 +324,16 @@ function sqlite () {
    		callback = clause;
    		clause = {};
    	}
+   	var values=[];
    	for(key in data){
-   		sets.push(key+" = '"+data[key]+"'");
+   		if (!data.hasOwnProperty(key)) continue;
+   		sets.push(key+" = ?");
+   		values.push(data[key]);
    	}
    	for(key in clause){
-   		where.push(key+" = '"+clause[key]+"'");
+   		if (!clause.hasOwnProperty(key)) continue;
+   		where.push(key+" = ?");
+   		values.push(clause[key]);
    	}
 
    	var sql = "UPDATE "+entity+" SET "+sets.join(', ')+(where.length>0?" WHERE "+where.join(" AND "):"");
@@ -330,10 +341,10 @@ function sqlite () {
    	this.sql = sql;
 
    	if(callback){
-   		callback(this.run(sql));
+   		callback(this.run(sql, values));
    		return this;
    	}else{
-   		return this.run(sql);
+   		return this.run(sql, values);
    	}
    }
 
@@ -352,9 +363,12 @@ function sqlite () {
    		clause = [];
    	}
 
+     var values=[];
    	if(clause){
    		for(key in clause){
-   			where.push(key+" = '"+clause[key]+"'");
+				if (!clause.hasOwnProperty(key)) continue;
+   			where.push(key+" = ?");
+   			values.push(clause[key]);
    		}
    	}
 
@@ -362,7 +376,7 @@ function sqlite () {
 
    	this.sql = sql;
 
-   	var result = this.pvDELETE(sql);
+   	var result = this.pvDELETE(sql, values);
 
    	if(callback){
    		callback(result);
