@@ -17,4 +17,11 @@ sqlite.run('SELECT * FROM COMPANYS', function(res){
 	console.log(res)
 });
 
+// Try break returned object with many whitespace
+sqlite.run('                     SELECT * FROM COMPANYS', function(res){
+	if(res.error)
+		throw (res.error)
+	console.log(res)
+});
+
 sqlite.close();

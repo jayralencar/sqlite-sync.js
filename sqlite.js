@@ -102,7 +102,7 @@ function sqlite () {
    		options = [];
    	}
    	var results;
-   	var type = sql.substring(0,6);
+   	var type = sql.replace(/^\s+/g, "").substring(0,6);
    	type = type.toUpperCase();
    	switch(type){
    		case "SELECT": results = this.pvSELECT(sql, options); break;
@@ -172,7 +172,7 @@ function sqlite () {
    	}
    	this.sql = sql;
    	try{
-   		var contents = this.db.exec(sql);	
+   		var contents = this.db.exec(sql.trim());	
    		if(contents.length){
    			var columns = contents[0].columns;
    			var values = contents[0].values;
