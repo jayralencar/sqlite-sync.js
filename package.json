@@ -27,7 +27,7 @@
     "url": "git+https://github.com/JayrAlencar/sqlite-sync.js"
   },
   "dependencies": {
-    "npm": "^5.8.0",
+    "npm": "^6.4.1",
     "sql.js": "latest"
   },
   "scripts": {
