@@ -18,4 +18,6 @@ sqlite.run('PRAGMA table_info(COMPANYS)', function(res){
 ```js
 	console.log(sqlite.getSql());
 ```
+## 0.3.9 (2019-08-12)
 
+- use of fixed sql.js version 0.3.2 instead of latest to avoid compability errors

@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "npm": "^6.4.1",
-    "sql.js": "latest"
+    "sql.js": "^0.3.2"
   },
   "scripts": {
     "test": "node test/test.js"
