@@ -104,8 +104,12 @@ sqlite.prototype.run = function (sql, options, callback) {
 	var results;
 	var type = sql.substring(0, 6);
 	type = type.toUpperCase();
+	if (type.startsWith('WITH')) {
+		type = 'WITH';
+	}
 	switch (type) {
 		case "SELECT":
+		case "WITH":
 			results = this.pvSELECT(sql, options);
 			break;
 		case "INSERT":
