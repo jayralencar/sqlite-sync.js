@@ -1,5 +1,5 @@
 {
-  "name": "sqlite-sync",
+  "name": "sqlite-sync-2",
   "description": "Node module to sqlite sync and async ",
   "readmeFilename": "README.md",
   "keywords": [
@@ -16,7 +16,7 @@
     "async",
     "database"
   ],
-  "version": "0.3.9",
+  "version": "0.3.9.1",
   "author": {
     "name": "Jayr Alencar",
     "email": "jayralencarpereira@gmail.com",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JayrAlencar/sqlite-sync.js"
+    "url": "git+https://github.com/rory1212/sqlite-sync.js"
   },
   "dependencies": {
     "npm": "^6.4.1",
