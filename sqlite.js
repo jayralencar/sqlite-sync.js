@@ -35,11 +35,15 @@ var SQL = require('sql.js');
 var path = require('path');
 var events = require('events');
 
+//Buffers storage for shared memory
+const memoryBuffers = {};
+
 //Variables
 sqlite.prototype.db = null;
 sqlite.prototype.buffer = null;
 sqlite.prototype.writer = null;
 sqlite.prototype.file = null;
+sqlite.prototype.sharedMemory = false;
 sqlite.prototype.sql = '';
 sqlite.prototype.debug = false;
 
@@ -55,8 +59,16 @@ function sqlite() {
  */
 sqlite.prototype.connect = function (db) {
 	if (typeof (db) == 'string') {
+		const fileMemory = db.indexOf('file::memory:') === 0;
 		this.file = db;
-		if (!db || db === ':memory:' || db.indexOf('file::memory:') === 0) {
+		if ((db.includes('mode=memory') || fileMemory) && db.includes('cache=shared')) {
+			this.sharedMemory = true;
+			this.file = this.file.split('?')[0];
+			if (!(this.file in memoryBuffers)) {
+				memoryBuffers[this.file] = new Buffer(0);
+			}
+			this.buffer = memoryBuffers[this.file];
+		} else if (!db || db === ':memory:' || fileMemory) {
 			this.buffer = new Buffer(0);
 		} else if (fs.existsSync(this.file)) {
 			this.buffer = fs.readFileSync(this.file);
@@ -436,7 +448,9 @@ sqlite.prototype.write = function () {
 	var data = this.db.export();
 	var buffer = new Buffer(data);
 
-	if (this.file) {
+	if (this.sharedMemory) {
+		memoryBuffers[this.file] = buffer;
+	} else if (this.file) {
 		fs.writeFileSync(this.file, buffer);
 	} else if (this.writer && typeof (this.writer) == 'function') {
 		this.writer(buffer);
